@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuentos Mágicos AI - Experiencia Fluida</title>
+    <title>Cuentos Mágicos AI - Personalización Total</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Cherry+Bomb+One&display=swap" rel="stylesheet">
     <style>
@@ -53,85 +53,125 @@
         .dot-ready { background-color: #4ade80; }
         
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        
+        .input-group { @apply space-y-1; }
+        label { @apply text-sm font-bold text-gray-600 ml-1; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div id="app" class="max-w-md mx-auto">
-        <!-- Pantalla de Inicio -->
+        <!-- Pantalla de Configuración -->
         <div id="setup-screen" class="card p-6 space-y-4 shadow-xl">
-            <h1 class="kids-title text-4xl text-center mb-6">Cuentos Mágicos</h1>
+            <h1 class="kids-title text-4xl text-center mb-4">Mi Personaje</h1>
             
-            <div class="space-y-3">
-                <input type="text" id="kidName" class="w-full rounded-xl border-2 border-yellow-200 p-3 outline-none focus:border-red-400" placeholder="Nombre del niño/a">
-                
+            <div class="grid grid-cols-1 gap-4">
+                <div class="input-group">
+                    <label>Nombre del protagonista</label>
+                    <input type="text" id="kidName" class="w-full rounded-xl border-2 border-yellow-200 p-3 outline-none focus:border-red-400" placeholder="Ej. Mateo">
+                </div>
+
                 <div class="grid grid-cols-2 gap-3">
-                    <input type="number" id="kidAge" class="w-full rounded-xl border-2 border-yellow-200 p-3" placeholder="Edad">
-                    <select id="kidGender" class="w-full rounded-xl border-2 border-yellow-200 p-3">
-                        <option value="un niño">Niño</option>
-                        <option value="una niña">Niña</option>
+                    <div class="input-group">
+                        <label>Edad</label>
+                        <input type="number" id="kidAge" class="w-full rounded-xl border-2 border-yellow-200 p-3" placeholder="4">
+                    </div>
+                    <div class="input-group">
+                        <label>Género</label>
+                        <select id="kidGender" class="w-full rounded-xl border-2 border-yellow-200 p-3">
+                            <option value="un niño">Niño</option>
+                            <option value="una niña">Niña</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Nuevos Campos de Personalización Física -->
+                <div class="grid grid-cols-2 gap-3 border-t pt-4 border-yellow-100">
+                    <div class="input-group">
+                        <label>Color de Pelo</label>
+                        <select id="hairColor" class="w-full rounded-xl border-2 border-yellow-200 p-3">
+                            <option value="café">Castaño</option>
+                            <option value="negro">Negro</option>
+                            <option value="rubio">Rubio</option>
+                            <option value="pelirrojo">Pelirrojo</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Color de Piel</label>
+                        <select id="skinTone" class="w-full rounded-xl border-2 border-yellow-200 p-3">
+                            <option value="clara">Clara</option>
+                            <option value="trigueña">Trigueña</option>
+                            <option value="oscura">Oscura</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Color Favorito</label>
+                    <select id="favColor" class="w-full rounded-xl border-2 border-yellow-200 p-3">
+                        <option value="azul">Azul</option>
+                        <option value="rojo">Rojo</option>
+                        <option value="verde">Verde</option>
+                        <option value="amarillo">Amarillo</option>
+                        <option value="morado">Morado</option>
+                        <option value="rosado">Rosado</option>
                     </select>
                 </div>
 
-                <input type="text" id="kidInterests" class="w-full rounded-xl border-2 border-yellow-200 p-3" placeholder="¿Qué le gusta? (ej. dragones)">
-                <input type="text" id="moralValue" class="w-full rounded-xl border-2 border-yellow-200 p-3" placeholder="Valor (ej. compartir)">
-                
-                <select id="storyLength" class="w-full rounded-xl border-2 border-yellow-200 p-3">
-                    <option value="3">3 páginas</option>
-                    <option value="5" selected>5 páginas</option>
-                </select>
+                <div class="input-group">
+                    <label>¿Qué le gusta mucho?</label>
+                    <input type="text" id="kidInterests" class="w-full rounded-xl border-2 border-yellow-200 p-3" placeholder="Ej. los barcos piratas">
+                </div>
+
+                <div class="input-group">
+                    <label>Valor o enseñanza</label>
+                    <input type="text" id="moralValue" class="w-full rounded-xl border-2 border-yellow-200 p-3" placeholder="Ej. ser valiente">
+                </div>
             </div>
 
             <button onclick="generateStory()" class="btn-primary w-full py-4 text-white font-bold text-xl rounded-2xl mt-4">
-                ✨ ¡Crear Cuento! ✨
+                ✨ ¡Crear mi Personaje! ✨
             </button>
         </div>
 
-        <!-- Pantalla de Carga Inicial -->
+        <!-- Pantalla de Carga -->
         <div id="loading-screen" class="hidden card p-10 flex flex-col items-center justify-center space-y-6 shadow-xl text-center">
             <div class="loader" style="width: 60px; height: 60px; border-width: 8px;"></div>
-            <p class="text-xl font-bold text-gray-600">Gemini está imaginando tu historia...</p>
+            <p class="text-xl font-bold text-gray-600 italic">"Pintando el pelo y preparando las aventuras..."</p>
         </div>
 
         <!-- Pantalla del Libro -->
         <div id="book-screen" class="hidden space-y-4">
-            <div class="card overflow-hidden shadow-2xl bg-white">
-                <!-- Contenedor Imagen -->
-                <div id="page-image-container" class="w-full aspect-square bg-gray-50 flex items-center justify-center relative border-b-2 border-yellow-100">
+            <div id="book-frame" class="card overflow-hidden shadow-2xl bg-white border-4">
+                <div id="page-image-container" class="w-full aspect-square bg-gray-50 flex items-center justify-center relative border-b-2">
                     <img id="page-image" src="" alt="Ilustración" class="w-full h-full object-cover transition-opacity duration-700 opacity-0">
                     <div id="img-placeholder" class="absolute inset-0 flex flex-col items-center justify-center space-y-2">
                         <div class="loader"></div>
-                        <p class="text-xs font-bold text-yellow-600 uppercase tracking-tighter">Dibujando...</p>
+                        <p class="text-xs font-bold text-gray-400 uppercase">Dibujando...</p>
                     </div>
                 </div>
                 
-                <!-- Contenedor Texto y Audio -->
                 <div class="p-6 relative">
-                    <button onclick="playCurrentAudio()" id="audioBtn" class="absolute -top-7 right-6 bg-white border-4 border-yellow-400 p-3 rounded-full shadow-lg hover:scale-110 transition-all disabled:opacity-50">
-                        <div id="audio-status-icon">
-                            <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.984 3.984 0 00-1.172-2.828 1 1 0 010-1.415z"></path>
-                            </svg>
-                        </div>
+                    <button onclick="playCurrentAudio()" id="audioBtn" class="absolute -top-7 right-6 bg-white border-4 p-3 rounded-full shadow-lg hover:scale-110 transition-all">
+                        <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071a1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.984 3.984 0 00-1.172-2.828a1 1 0 010-1.415z"></path>
+                        </svg>
                     </button>
                     <div id="page-text" class="text-lg leading-relaxed text-gray-800 text-center font-medium min-h-[80px]"></div>
                 </div>
             </div>
             
-            <!-- Controles Inferiores -->
             <div class="flex justify-between items-center px-2">
-                <button onclick="changePage(-1)" id="prevBtn" class="bg-yellow-400 p-4 rounded-full shadow-md disabled:opacity-20">
+                <button onclick="changePage(-1)" id="prevBtn" class="p-4 rounded-full shadow-md disabled:opacity-20 bg-yellow-400">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
                 </button>
                 
                 <div class="text-center">
                     <span id="pageCounter" class="font-bold text-gray-700 bg-white px-5 py-2 rounded-full border-2 border-yellow-200 text-sm">1 / 5</span>
-                    <div id="preload-indicators" class="flex justify-center mt-2 space-x-1">
-                        <!-- Puntos de estado se generarán aquí -->
-                    </div>
+                    <div id="preload-indicators" class="flex justify-center mt-2 space-x-1"></div>
                 </div>
 
-                <button onclick="changePage(1)" id="nextBtn" class="bg-yellow-400 p-4 rounded-full shadow-md disabled:opacity-20">
+                <button onclick="changePage(1)" id="nextBtn" class="p-4 rounded-full shadow-md disabled:opacity-20 bg-yellow-400">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                 </button>
             </div>
@@ -143,49 +183,63 @@
         let currentStory = [];
         let currentPage = 0;
         let activeAudio = null;
+        let kidProfile = {};
 
-        // --- Core ---
+        const colorMap = {
+            'azul': '#3b82f6', 'rojo': '#ef4444', 'verde': '#22c55e', 
+            'amarillo': '#facc15', 'morado': '#a855f7', 'rosado': '#ec4899'
+        };
+
         async function generateStory() {
             const name = document.getElementById('kidName').value;
             if (!name) return alert("¡Dime el nombre del protagonista!");
 
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('loading-screen').classList.remove('hidden');
-
-            const config = {
+            kidProfile = {
                 name,
                 age: document.getElementById('kidAge').value || "pequeña",
                 gender: document.getElementById('kidGender').value,
+                hair: document.getElementById('hairColor').value,
+                skin: document.getElementById('skinTone').value,
+                favColor: document.getElementById('favColor').value,
                 interests: document.getElementById('kidInterests').value || "aventuras",
-                value: document.getElementById('moralValue').value || "bondad",
-                len: document.getElementById('storyLength').value
+                value: document.getElementById('moralValue').value || "bondad"
             };
 
-            const prompt = `Eres un autor de cuentos. Crea un cuento para ${config.gender} de ${config.age} años llamado ${config.name}. Intereses: ${config.interests}. Valor: ${config.value}. Responde SOLO JSON: { "pages": [ { "text": "3 frases máximo", "imagePrompt": "descripción visual" } ] } con ${config.len} páginas.`;
+            // Estilizar interfaz según color favorito
+            document.getElementById('book-frame').style.borderColor = colorMap[kidProfile.favColor];
+            document.getElementById('audioBtn').style.borderColor = colorMap[kidProfile.favColor];
+
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('loading-screen').classList.remove('hidden');
+
+            const storyPrompt = `Eres un autor de cuentos infantiles. Crea un cuento de 5 páginas.
+            Protagonista: ${kidProfile.gender} de ${kidProfile.age} años llamado ${kidProfile.name}.
+            Rasgos físicos: pelo color ${kidProfile.hair}, piel ${kidProfile.skin}.
+            Color favorito: ${kidProfile.favColor} (menciónalo sutilmente en la historia).
+            Intereses: ${kidProfile.interests}. Valor: ${kidProfile.value}.
+            
+            Responde SOLO JSON con este formato:
+            { "pages": [ { "text": "máximo 3 frases", "imagePrompt": "descripción visual detallada incluyendo al niño con pelo ${kidProfile.hair} y piel ${kidProfile.skin}" } ] }`;
 
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: "Genera el cuento solicitado." }] }],
-                        systemInstruction: { parts: [{ text: prompt }] },
+                        contents: [{ parts: [{ text: "Genera el cuento personalizado." }] }],
+                        systemInstruction: { parts: [{ text: storyPrompt }] },
                         generationConfig: { responseMimeType: "application/json" }
                     })
                 });
                 const data = await res.json();
                 currentStory = JSON.parse(data.candidates[0].content.parts[0].text).pages.map(p => ({
-                    ...p,
-                    imageUrl: null,
-                    audioObject: null,
-                    status: 'pending' 
+                    ...p, imageUrl: null, audioObject: null, status: 'pending'
                 }));
 
                 initBookUI();
                 processStoryAssets(); 
             } catch (e) {
-                console.error("Error al generar historia:", e);
-                alert("La magia se agotó. Intenta de nuevo.");
+                alert("La magia se distrajo. ¡Intenta de nuevo!");
                 location.reload();
             }
         }
@@ -193,10 +247,7 @@
         function initBookUI() {
             document.getElementById('loading-screen').classList.add('hidden');
             document.getElementById('book-screen').classList.remove('hidden');
-            
-            const indicatorCont = document.getElementById('preload-indicators');
-            indicatorCont.innerHTML = currentStory.map((_, i) => `<span id="dot-${i}" class="status-dot dot-loading"></span>`).join('');
-            
+            document.getElementById('preload-indicators').innerHTML = currentStory.map((_, i) => `<span id="dot-${i}" class="status-dot dot-loading"></span>`).join('');
             updatePageView();
         }
 
@@ -206,8 +257,11 @@
                 updateDot(i, 'loading');
 
                 try {
+                    // Refinamos el prompt de imagen para asegurar consistencia física
+                    const visualPrompt = `${currentStory[i].imagePrompt}. El niño debe tener pelo ${kidProfile.hair} y piel ${kidProfile.skin}. Estilo acuarela mágica, colores vibrantes con toques de ${kidProfile.favColor}. Sin texto.`;
+                    
                     const [imgUrl, audioObj] = await Promise.all([
-                        generateImage(currentStory[i].imagePrompt),
+                        generateImage(visualPrompt),
                         generateAudio(currentStory[i].text)
                     ]);
 
@@ -215,16 +269,12 @@
                     currentStory[i].audioObject = audioObj;
                     currentStory[i].status = 'ready';
                 } catch (err) {
-                    console.error(`Error en página ${i}:`, err);
-                    currentStory[i].imageUrl = "https://via.placeholder.com/400/FF6B6B/FFFFFF?text=Ups!+Magia+en+camino";
-                    currentStory[i].status = 'ready'; // Marcamos como ready para que el UI no se bloquee
+                    currentStory[i].imageUrl = "https://via.placeholder.com/400/FF6B6B/FFFFFF?text=Ups!+Reintentando+dibujo";
+                    currentStory[i].status = 'ready';
                 }
                 
                 updateDot(i, 'ready');
-
-                if (currentPage === i) {
-                    refreshPageAssets();
-                }
+                if (currentPage === i) refreshPageAssets();
             }
         }
 
@@ -234,19 +284,13 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        instances: { prompt: `Ilustración infantil mágica, estilo Pixar, colores vibrantes, amigable, sin texto: ${prompt}` },
+                        instances: { prompt: prompt },
                         parameters: { sampleCount: 1 }
                     })
                 });
                 const data = await res.json();
-                if (data.predictions && data.predictions[0]) {
-                    return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
-                }
-                throw new Error("No image data");
-            } catch (e) { 
-                console.error("Error Imagen:", e);
-                return "https://via.placeholder.com/400/FF6B6B/FFFFFF?text=Dibujando+con+amor...";
-            }
+                return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
+            } catch (e) { return null; }
         }
 
         async function generateAudio(text) {
@@ -255,7 +299,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Voz de abuelo cuentacuentos, dulce y pausada: ${text}` }] }],
+                        contents: [{ parts: [{ text: `Voz de narrador de cuentos: ${text}` }] }],
                         generationConfig: {
                             responseModalities: ["AUDIO"],
                             speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } }
@@ -263,29 +307,22 @@
                     })
                 });
                 const data = await res.json();
-                const pcm = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-                if (!pcm) return null;
+                const pcm = data.candidates[0].content.parts[0].inlineData.data;
                 return new Audio(URL.createObjectURL(pcmToWav(pcm, 24000)));
-            } catch (e) { 
-                console.error("Error Audio:", e);
-                return null; 
-            }
+            } catch (e) { return null; }
         }
 
         function updatePageView() {
             if (activeAudio) { activeAudio.pause(); activeAudio = null; }
-            
             const page = currentStory[currentPage];
             document.getElementById('page-text').innerText = page.text;
             document.getElementById('pageCounter').innerText = `${currentPage + 1} / ${currentStory.length}`;
             document.getElementById('prevBtn').disabled = currentPage === 0;
             document.getElementById('nextBtn').disabled = currentPage === currentStory.length - 1;
-
-            // Limpiar imagen vieja antes de intentar cargar la nueva
+            
             const imgEl = document.getElementById('page-image');
             imgEl.classList.add('opacity-0');
             imgEl.src = ""; 
-
             refreshPageAssets();
         }
 
@@ -296,15 +333,9 @@
             const audioBtn = document.getElementById('audioBtn');
 
             if (page.imageUrl) {
-                // Pre-carga real para asegurar que no parpadee
                 const tempImg = new Image();
                 tempImg.onload = () => {
                     imgEl.src = page.imageUrl;
-                    imgEl.classList.remove('opacity-0');
-                    placeholder.classList.add('hidden');
-                };
-                tempImg.onerror = () => {
-                    imgEl.src = "https://via.placeholder.com/400/FFD93D/666666?text=Ouch!+Reintentando...";
                     imgEl.classList.remove('opacity-0');
                     placeholder.classList.add('hidden');
                 };
@@ -312,33 +343,24 @@
             } else {
                 placeholder.classList.remove('hidden');
             }
-
             audioBtn.classList.toggle('animate-bounce', page.status === 'ready' && !page.audioPlayed);
         }
 
         function playCurrentAudio() {
             const page = currentStory[currentPage];
             if (activeAudio) { activeAudio.pause(); activeAudio = null; }
-            
             if (page.audioObject) {
                 activeAudio = page.audioObject;
                 activeAudio.play();
                 page.audioPlayed = true;
                 document.getElementById('audioBtn').classList.remove('animate-bounce');
-            } else {
-                alert("La voz mágica todavía se está preparando para esta página.");
             }
         }
 
-        function changePage(dir) {
-            currentPage += dir;
-            updatePageView();
-        }
-
+        function changePage(dir) { currentPage += dir; updatePageView(); }
         function updateDot(idx, state) {
             const dot = document.getElementById(`dot-${idx}`);
-            if (!dot) return;
-            dot.className = `status-dot ${state === 'ready' ? 'dot-ready' : 'dot-loading'}`;
+            if (dot) dot.className = `status-dot ${state === 'ready' ? 'dot-ready' : 'dot-loading'}`;
         }
 
         function pcmToWav(b64, rate) {
