@@ -68,7 +68,7 @@
             <div class="grid grid-cols-1 gap-4">
                 <div class="input-group">
                     <label>Nombre del protagonista</label>
-                    <input type="text" id="kidName" class="w-full rounded-xl border-2 border-yellow-200 p-3 outline-none focus:border-red-400" placeholder="Ej. Mateo">
+                    <input type="text" id="kidName" class="w-full rounded-xl border-2 border-yellow-200 p-3 outline-none focus:border-red-400" placeholder="Ej. Salomon">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -126,6 +126,14 @@
                 <div class="input-group">
                     <label>Valor o enseñanza</label>
                     <input type="text" id="moralValue" class="w-full rounded-xl border-2 border-yellow-200 p-3" placeholder="Ej. ser valiente">
+                </div>
+
+                <div class="input-group border-t pt-4 border-yellow-100">
+                    <label>Modelo de imágenes</label>
+                    <select id="imageModel" class="w-full rounded-xl border-2 border-yellow-200 p-3">
+                        <option value="imagen">Imagen 4.0 Fast</option>
+                        <option value="nano-banana">Nano Banana (Gemini)</option>
+                    </select>
                 </div>
             </div>
 
@@ -202,7 +210,8 @@
                 skin: document.getElementById('skinTone').value,
                 favColor: document.getElementById('favColor').value,
                 interests: document.getElementById('kidInterests').value || "aventuras",
-                value: document.getElementById('moralValue').value || "bondad"
+                value: document.getElementById('moralValue').value || "bondad",
+                imageModel: document.getElementById('imageModel').value || "imagen"
             };
 
             // Estilizar interfaz según color favorito
@@ -212,26 +221,33 @@
             document.getElementById('setup-screen').classList.add('hidden');
             document.getElementById('loading-screen').classList.remove('hidden');
 
-            const storyPrompt = `Eres un autor de cuentos infantiles. Crea un cuento de 5 páginas.
+            const storyPrompt = `Eres un autor de cuentos infantiles. Crea un cuento de 5 páginas. Todo debe estar en español: el texto del cuento y las descripciones de imagen.
             Protagonista: ${kidProfile.gender} de ${kidProfile.age} años llamado ${kidProfile.name}.
-            Rasgos físicos: pelo color ${kidProfile.hair}, piel ${kidProfile.skin}.
+            Rasgos físicos OBLIGATORIOS en TODAS las ilustraciones: pelo ${kidProfile.hair}, piel ${kidProfile.skin}. El personaje debe verse igual en todas las páginas.
             Color favorito: ${kidProfile.favColor} (menciónalo sutilmente en la historia).
             Intereses: ${kidProfile.interests}. Valor: ${kidProfile.value}.
             
-            Responde SOLO JSON con este formato:
-            { "pages": [ { "text": "máximo 3 frases", "imagePrompt": "descripción visual detallada incluyendo al niño con pelo ${kidProfile.hair} y piel ${kidProfile.skin}" } ] }`;
+            Regla para imagePrompt: En cada página, la descripción visual DEBE incluir explícitamente "niño/niña con pelo ${kidProfile.hair} y piel ${kidProfile.skin}" y "estilo acuarela mágica, colores vibrantes". Describe la escena pero siempre con el mismo protagonista y el mismo estilo.
+            
+            Responde ÚNICAMENTE en JSON con este formato (usa las claves "pages", "text" e "imagePrompt"):
+            { "pages": [ { "text": "máximo 3 frases en español", "imagePrompt": "descripción de la escena en español, incluyendo: protagonista con pelo ${kidProfile.hair} y piel ${kidProfile.skin}, estilo acuarela mágica" } ] }`;
 
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: "Genera el cuento personalizado." }] }],
+                        contents: [{ parts: [{ text: "Genera el cuento personalizado. Responde en JSON con las claves pages, text e imagePrompt, todo en español." }] }],
                         systemInstruction: { parts: [{ text: storyPrompt }] },
                         generationConfig: { responseMimeType: "application/json" }
                     })
                 });
                 const data = await res.json();
+                if (!res.ok) {
+                    const err = new Error(data.error?.message || "Error de API " + res.status);
+                    err.apiError = data.error || { code: res.status };
+                    throw err;
+                }
                 currentStory = JSON.parse(data.candidates[0].content.parts[0].text).pages.map(p => ({
                     ...p, imageUrl: null, audioObject: null, status: 'pending'
                 }));
@@ -239,8 +255,10 @@
                 initBookUI();
                 processStoryAssets(); 
             } catch (e) {
-                alert("La magia se distrajo. ¡Intenta de nuevo!");
-                location.reload();
+                const msg = e.message || (e.apiError ? JSON.stringify(e.apiError) : "Error desconocido");
+                alert("Error al generar el cuento:\n" + msg + "\n\nComprueba: 1) API Generative Language activada en Google Cloud. 2) Si abres el archivo con file://, sirve la página desde un servidor (ej. python -m http.server) y añade http://localhost:* como referente permitido en la API key.");
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('setup-screen').classList.remove('hidden');
             }
         }
 
@@ -257,8 +275,10 @@
                 updateDot(i, 'loading');
 
                 try {
-                    // Refinamos el prompt de imagen para asegurar consistencia física
-                    const visualPrompt = `${currentStory[i].imagePrompt}. El niño debe tener pelo ${kidProfile.hair} y piel ${kidProfile.skin}. Estilo acuarela mágica, colores vibrantes con toques de ${kidProfile.favColor}. Sin texto.`;
+                    // Prompt fijo al inicio: estilo y personaje obligatorios en todas las imágenes
+                    const personajeFijo = `${kidProfile.gender} con pelo ${kidProfile.hair} y piel ${kidProfile.skin}, mismo personaje en todas las escenas`;
+                    const estiloFijo = `ilustración en estilo acuarela mágica, colores vibrantes, toques de ${kidProfile.favColor}, aspecto de cuento infantil`;
+                    const visualPrompt = `${estiloFijo}. ${personajeFijo}. Escena: ${currentStory[i].imagePrompt}. Repetir: el protagonista tiene pelo ${kidProfile.hair} y piel ${kidProfile.skin}. Estilo acuarela mágica. Sin texto ni letras en la imagen.`;
                     
                     const [imgUrl, audioObj] = await Promise.all([
                         generateImage(visualPrompt),
@@ -279,27 +299,86 @@
         }
 
         async function generateImage(prompt) {
+            const model = kidProfile.imageModel || "imagen";
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        instances: { prompt: prompt },
-                        parameters: { sampleCount: 1 }
-                    })
-                });
-                const data = await res.json();
-                return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
-            } catch (e) { return null; }
+                if (model === "nano-banana") {
+                    return await generateImageNanoBanana(prompt);
+                }
+                return await generateImageImagen(prompt);
+            } catch (e) {
+                console.warn("generateImage (error)", e);
+                return null;
+            }
+        }
+
+        async function generateImageImagen(prompt) {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-fast-generate-001:predict?key=${apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': apiKey
+                },
+                body: JSON.stringify({
+                    instances: [{ prompt: prompt }],
+                    parameters: {
+                        sampleCount: 1,
+                        aspectRatio: "1:1",
+                        personGeneration: "allow_all",
+                        languageHint: "es"
+                    }
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.warn("Error API Imagen", data.error || res.status, data);
+                return null;
+            }
+            const pred = data.predictions?.[0];
+            if (pred && pred.bytesBase64Encoded) {
+                const mime = pred.mimeType || "image/png";
+                return `data:${mime};base64,${pred.bytesBase64Encoded}`;
+            }
+            if (data.predictions?.[0]?.raiFilteredReason) {
+                console.warn("Imagen filtrada por seguridad", data.predictions[0].raiFilteredReason);
+            }
+            return null;
+        }
+
+        async function generateImageNanoBanana(prompt) {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        responseModalities: ["TEXT", "IMAGE"],
+                        responseMimeType: "text/plain"
+                    }
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.warn("Error API Nano Banana", data.error || res.status, data);
+                return null;
+            }
+            const parts = data.candidates?.[0]?.content?.parts || [];
+            const part = parts.find(p => p.inlineData || p.inline_data);
+            const inline = part?.inlineData || part?.inline_data;
+            if (inline?.data) {
+                const mime = inline.mimeType || "image/png";
+                return `data:${mime};base64,${inline.data}`;
+            }
+            return null;
         }
 
         async function generateAudio(text) {
+            if (!text || !text.trim()) return null;
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Voz de narrador de cuentos: ${text}` }] }],
+                        contents: [{ parts: [{ text: `Voz de narrador de cuentos infantiles en español. Lee este texto en español con entonación cálida: ${text}` }] }],
                         generationConfig: {
                             responseModalities: ["AUDIO"],
                             speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } }
@@ -307,9 +386,30 @@
                     })
                 });
                 const data = await res.json();
-                const pcm = data.candidates[0].content.parts[0].inlineData.data;
-                return new Audio(URL.createObjectURL(pcmToWav(pcm, 24000)));
-            } catch (e) { return null; }
+                if (!res.ok) {
+                    console.warn("Error API TTS", data.error || res.status);
+                    return null;
+                }
+                const parts = data.candidates?.[0]?.content?.parts || [];
+                let pcmB64 = null;
+                let sampleRate = 24000;
+                for (const p of parts) {
+                    const inline = p.inlineData || p.inline_data;
+                    if (inline && inline.data) {
+                        pcmB64 = inline.data;
+                        break;
+                    }
+                }
+                if (!pcmB64) return null;
+                const wavBlob = pcmToWav(pcmB64, sampleRate);
+                const url = URL.createObjectURL(wavBlob);
+                const audio = new Audio(url);
+                audio.addEventListener('ended', () => URL.revokeObjectURL(url));
+                return audio;
+            } catch (e) {
+                console.warn("generateAudio (error)", e);
+                return null;
+            }
         }
 
         function updatePageView() {
@@ -348,12 +448,16 @@
 
         function playCurrentAudio() {
             const page = currentStory[currentPage];
-            if (activeAudio) { activeAudio.pause(); activeAudio = null; }
+            if (!page) return;
+            if (activeAudio) { activeAudio.pause(); activeAudio.currentTime = 0; activeAudio = null; }
             if (page.audioObject) {
                 activeAudio = page.audioObject;
-                activeAudio.play();
+                activeAudio.currentTime = 0;
+                activeAudio.play().catch(e => console.warn("Reproducción de audio", e));
                 page.audioPlayed = true;
                 document.getElementById('audioBtn').classList.remove('animate-bounce');
+            } else {
+                alert("No hay audio para esta página. Puede que la voz no esté disponible aún.");
             }
         }
 
