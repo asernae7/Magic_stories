@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cuentos Mágicos AI - Personalización Total</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Cherry+Bomb+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Cherry+Bomb+One&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Quicksand', sans-serif;
@@ -92,7 +92,7 @@
                         <select id="hairColor" class="w-full rounded-xl border-2 border-yellow-200 p-3">
                             <option value="café">Castaño</option>
                             <option value="negro">Negro</option>
-                            <option value="rubio">Rubio</option>
+                            <option value="rubio amarillo">Rubio</option>
                             <option value="pelirrojo">Pelirrojo</option>
                         </select>
                     </div>
@@ -207,6 +207,9 @@
                     </div>
                     <div id="cover-title-overlay" class="hidden absolute inset-0 flex items-end justify-center p-6" style="background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%);">
                         <h2 id="cover-title-text" class="kids-title text-center text-white drop-shadow-lg" style="font-size: clamp(1.2rem, 5vw, 2rem); text-shadow: 2px 2px 8px rgba(0,0,0,0.8);"></h2>
+                    </div>
+                    <div id="fin-screen" class="hidden absolute inset-0 flex items-center justify-center" style="background: linear-gradient(135deg, #fef9e7 0%, #fdf2f2 100%);">
+                        <p class="kids-title text-5xl md:text-6xl text-amber-600" style="text-shadow: 2px 2px 0 #ffd93d;">Fin</p>
                     </div>
                 </div>
                 
@@ -387,32 +390,48 @@
             const selectedStyle = artStyles[kidProfile.artStyleKey] || artStyles['acuarela'];
             const selectedType = storyTypes[kidProfile.storyTypeKey] || storyTypes['fantasia'];
 
+            const ageNum = parseInt(kidProfile.age, 10) || 0;
+            const isBaby = ageNum === 0 || ageNum === 1;
+            const protagonistLabel = isBaby ? 'bebé' : 'protagonista';
+            const protagonistGenderEs = isBaby ? (kidProfile.gender.includes('niña') ? 'una bebé' : 'un bebé') : kidProfile.gender;
+            const protagonistGenderEn = isBaby ? (kidProfile.gender.includes('niña') ? 'baby girl' : 'baby boy') : kidProfile.gender;
+
             const themeInstruction = kidProfile.themeContext
                 ? `\n            TEMA CENTRAL DEL CUENTO (es obligatorio seguirlo): ${kidProfile.themeContext}`
                 : '';
 
-            const storyPrompt = `Eres un autor de cuentos infantiles. Crea un cuento de 5 páginas. Todo debe estar en español: el texto del cuento y las descripciones de imagen.
-            Protagonista: ${kidProfile.gender} de ${kidProfile.age} años llamado ${kidProfile.name}.
-            Rasgos físicos OBLIGATORIOS en TODAS las ilustraciones: pelo ${kidProfile.hair}, piel ${kidProfile.skin}. El personaje debe verse igual en todas las páginas.
-            Color favorito: ${kidProfile.favColor} (menciónalo sutilmente en la historia).
-            Intereses: ${kidProfile.interests}. Valor: ${kidProfile.value}.
-            TIPO DE HISTORIA (obligatorio): ${selectedType.instruction}${themeInstruction}
+            const storyPrompt = `Actua como autor profesional de literatura infantil, psicologo infantil y director de arte de libros ilustrados. 
+            Tu tarea es crear un cuento infantil personalizado de 5 paginas diseñado para ninos menores de 7 anos con un enfoque emocional, educativo y positivo.
+            El cuento debe ayudar al nino a comprender un valor o situacion emocional mediante una historia simple y clara.
+            DATOS DEL PROTAGONISTA:Nombre: ${kidProfile.name}Edad: ${kidProfile.age} anosGenero: ${kidProfile.gender}
+            Rasgos Fisicos OBLIGATORIOS: Pelo ${kidProfile.hair}, piel ${kidProfile.skin}.Color favorito: ${kidProfile.favColor} (mencionarlo sutilmente).
+            Intereses: ${kidProfile.interests}Valor: ${kidProfile.value}
             
-            Regla para imagePrompt: En cada página la descripción visual DEBE incluir: "${kidProfile.gender} con pelo ${kidProfile.hair} y piel ${kidProfile.skin}", "${selectedStyle.label}", colores vibrantes. Mismo protagonista en todas las páginas.
+            PARAMETROS DE LA HISTORIA:Tipo de Historia: ${selectedType.instruction}${themeInstruction} (Contexto: ${storyType}).
+            Estilo Visual: ${selectedStyle.label} (${artStyle}).
+            Idioma: Espanol.
+            Reglas de consistencia: El ${protagonistLabel} debe mantener exactamente el mismo aspecto (pelo, piel, peinado, ropa y proporciones) en todas las ilustraciones.${isBaby ? ' IMPORTANTE: La edad es 0 o 1 año, por tanto el protagonista es un BEBÉ. Todas las ilustraciones deben mostrar un bebé (proporciones de bebé, rasgos infantiles), NO un niño mayor. El bebé SIEMPRE debe llevar ropa o al menos pañal.' : ''}
+            Tono: Calido, optimista y cercano, maximo 3 frases por pagina.
             
-            Responde ÚNICAMENTE en JSON con este formato exacto:
-            {
-              "title": "título creativo e imaginativo del cuento en español (máx 8 palabras)",
-              "coverImagePrompt": "descripción visual de la imagen de portada: escena épica y atractiva que capture la esencia del cuento, con el protagonista con pelo ${kidProfile.hair} y piel ${kidProfile.skin}, ${selectedStyle.label}, sin texto ni letras",
-              "pages": [ { "text": "máximo 3 frases en español", "imagePrompt": "descripción de la escena en español, incluyendo: protagonista con pelo ${kidProfile.hair} y piel ${kidProfile.skin}, ${selectedStyle.label}" } ]
-            }`;
+            REGLA DE SALIDA (ESTRICTA):Responde UNICAMENTE en formato JSON. 
+            No incluyas texto fuera del objeto. La respuesta debe comenzar con { y terminar con }. 
+            OBLIGATORIO: El resultado total son 6 elementos: 1 portada (coverImagePrompt) + 5 paginas de historia (array "pages"). El array "pages" debe contener EXACTAMENTE 5 objetos (page_number 1, 2, 3, 4 y 5). No omitas ninguna pagina.
+            El JSON debe seguir exactamente esta estructura:
+            {"title": "Titulo creativo e imaginativo del cuento en espanol, maximo 8 palabras","learning_goal": "Valor o habilidad que se trabaja en la historia",
+            "character_sheet": "Descripcion tecnica detallada del ${protagonistLabel} (rostro, peinado, ropa fija) para asegurar consistencia visual absoluta en el estilo ${artStyle}",
+            "coverImagePrompt": "Descripcion visual en espanol para la portada: escena epica que capture la esencia del cuento, ${protagonistLabel} con pelo ${kidProfile.hair} y piel ${kidProfile.skin}, ${isBaby ? 'BEBE (proporciones de bebe, no nino mayor), siempre con ropa o pañal, ' : ''}estilo ${selectedStyle.label}, sin texto ni letras","pages": [{"page_number": 1,"text": "Texto narrativo en espanol, maximo 3 frases","imagePrompt": "Detailed English prompt: ${selectedStyle.label}, 
+            ${isBaby ? 'baby' : 'protagonist'} ${protagonistGenderEn} with ${kidProfile.hair} hair and ${kidProfile.skin} skin${isBaby ? ', infant proportions, baby features, chubby cheeks, always wearing clothes or diaper' : ''}, 
+            [specific scene description], same clothes, consistent character design, vibrant colors, high quality children's book illustration"},
+            { "page_number": 2, "text": "...", "imagePrompt": "..." },{ "page_number": 3, "text": "...", "imagePrompt": "..." },{ "page_number": 4, "text": "...", "imagePrompt": "..." },
+             {"page_number": 5,"text": "Texto final con aprendizaje y una pregunta de reflexion para los padres",
+             "imagePrompt": "Detailed English prompt: final scene of emotional achievement and joy, ${selectedStyle.label}, same ${isBaby ? 'baby wearing clothes or diaper' : 'protagonist'}, happy ending"}]}`;
 
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: "Genera el cuento personalizado. Responde en JSON con las claves pages, text e imagePrompt, todo en español." }] }],
+                        contents: [{ parts: [{ text: "Genera el cuento personalizado. Responde en JSON con las claves pages, text e imagePrompt, todo en español. El array pages debe tener EXACTAMENTE 6 elementos (1 portada + 5 páginas del cuento). Total: 1 portada + 5 páginas = 6 pantallas." }] }],
                         systemInstruction: { parts: [{ text: storyPrompt }] },
                         generationConfig: { responseMimeType: "application/json" }
                     })
@@ -429,14 +448,16 @@
                 // Portada como página 0
                 const coverPage = {
                     isCover: true,
+                    isFin: false,
                     title: kidProfile.storyTitle,
                     text: '',
                     imagePrompt: parsed.coverImagePrompt || '',
                     imageUrl: null, audioObject: null, status: 'pending'
                 };
+                const finPage = { isFin: true, text: '', imageUrl: null, audioObject: null, status: 'ready' };
                 currentStory = [coverPage, ...parsed.pages.map(p => ({
-                    ...p, isCover: false, imageUrl: null, audioObject: null, status: 'pending'
-                }))];
+                    ...p, isCover: false, isFin: false, imageUrl: null, audioObject: null, status: 'pending'
+                })), finPage];
 
                 initBookUI();
                 processStoryAssets(); 
@@ -457,14 +478,22 @@
 
         async function processStoryAssets() {
             for (let i = 0; i < currentStory.length; i++) {
+                if (currentStory[i].isFin) {
+                    updateDot(i, 'ready');
+                    continue;
+                }
                 currentStory[i].status = 'loading';
                 updateDot(i, 'loading');
 
                 try {
                     const style = artStyles[kidProfile.artStyleKey] || artStyles['acuarela'];
-                    const personajeFijo = `${kidProfile.gender} with ${kidProfile.hair} hair and ${kidProfile.skin} skin tone, same character in every scene`;
+                    const ageNum = parseInt(kidProfile.age, 10) || 0;
+                    const isBaby = ageNum === 0 || ageNum === 1;
+                    const protagonistEn = isBaby ? (kidProfile.gender.includes('niña') ? 'baby girl' : 'baby boy') : kidProfile.gender;
+                    const babySuffix = isBaby ? ', infant proportions, baby features, chubby cheeks, very young, always wearing clothes or diaper' : '';
+                    const personajeFijo = `${protagonistEn} with ${kidProfile.hair} hair and ${kidProfile.skin} skin tone${babySuffix}, same character in every scene`;
                     const estiloFijo = `${style.imageStyle}, touches of ${kidProfile.favColor}, children's book illustration`;
-                    const visualPrompt = `${estiloFijo}. ${personajeFijo}. Scene: ${currentStory[i].imagePrompt}. Important: protagonist has ${kidProfile.hair} hair and ${kidProfile.skin} skin. ${style.imageStyle}. No text or letters in the image.`;
+                    const visualPrompt = `${estiloFijo}. ${personajeFijo}. Scene: ${currentStory[i].imagePrompt}. Important: ${isBaby ? 'baby' : 'protagonist'} has ${kidProfile.hair} hair and ${kidProfile.skin} skin. ${style.imageStyle}. No text or letters in the image.`;
 
                     // Para la portada: audio del título + "Un cuento de [nombre]"
                     const audioText = currentStory[i].isCover
@@ -607,25 +636,28 @@
             if (activeAudio) { activeAudio.pause(); activeAudio = null; }
             const page = currentStory[currentPage];
 
-            // Portada: ocultar texto y botón de audio; mostrar overlay del título
             const isCover = page.isCover === true;
+            const isFin = page.isFin === true;
             const pageText = document.getElementById('page-text');
             const audioBtn = document.getElementById('audioBtn');
             const coverOverlay = document.getElementById('cover-title-overlay');
             const coverTitleText = document.getElementById('cover-title-text');
+            const finScreen = document.getElementById('fin-screen');
 
-            pageText.innerText = isCover ? '' : (page.text || '');
-            pageText.classList.toggle('hidden', isCover);
-            audioBtn.classList.toggle('hidden', isCover);
+            pageText.innerText = (isCover || isFin) ? '' : (page.text || '');
+            pageText.classList.toggle('hidden', isCover || isFin);
+            audioBtn.classList.toggle('hidden', isCover || isFin);
+            finScreen.classList.toggle('hidden', !isFin);
 
             if (isCover) {
                 coverTitleText.innerText = page.title || kidProfile.storyTitle || '';
             }
 
-            // Contador: portada = "Portada", páginas = "1 / N" (sin contar portada)
-            const storyPages = currentStory.length - 1;
+            const storyPages = currentStory.length - 2;
             if (isCover) {
                 document.getElementById('pageCounter').innerText = 'Portada';
+            } else if (isFin) {
+                document.getElementById('pageCounter').innerText = 'Fin';
             } else {
                 document.getElementById('pageCounter').innerText = `${currentPage} / ${storyPages}`;
             }
@@ -644,18 +676,23 @@
         function refreshPageAssets() {
             const page = currentStory[currentPage];
             const isCover = page.isCover === true;
+            const isFin = page.isFin === true;
             const imgEl = document.getElementById('page-image');
             const placeholder = document.getElementById('img-placeholder');
             const audioBtn = document.getElementById('audioBtn');
             const coverOverlay = document.getElementById('cover-title-overlay');
 
+            if (isFin) {
+                placeholder.classList.add('hidden');
+                coverOverlay.classList.add('hidden');
+                return;
+            }
             if (page.imageUrl) {
                 const tempImg = new Image();
                 tempImg.onload = () => {
                     imgEl.src = page.imageUrl;
                     imgEl.classList.remove('opacity-0');
                     placeholder.classList.add('hidden');
-                    // Mostrar overlay del título solo en portada y cuando la imagen cargó
                     coverOverlay.classList.toggle('hidden', !isCover);
                 };
                 tempImg.src = page.imageUrl;
@@ -692,6 +729,16 @@
             }
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
+            try {
+                const fontRes = await fetch('https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/poppins/Poppins-Regular.ttf');
+                const fontBuf = await fontRes.arrayBuffer();
+                const bytes = new Uint8Array(fontBuf);
+                let binary = '';
+                for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+                doc.addFileToVFS('Poppins-Regular.ttf', btoa(binary));
+                doc.addFont('Poppins-Regular.ttf', 'Poppins', 'normal');
+                doc.setFont('Poppins', 'normal');
+            } catch (e) { /* fallback: usar fuente por defecto */ }
             const pageW = doc.internal.pageSize.getWidth();
             const pageH = doc.internal.pageSize.getHeight();
             const margin = 15;
@@ -705,9 +752,7 @@
                 let y = margin;
 
                 if (p.isCover) {
-                    // Fondo sólido para la portada
-                    doc.setFillColor(26, 26, 46);
-                    doc.rect(0, 0, pageW, pageH, 'F');
+                    drawPdfGradient(doc, pageW, pageH, colorMap[kidProfile.favColor] || '#a855f7');
 
                     // Imagen de portada
                     let imgBottom = margin;
@@ -727,13 +772,11 @@
                         } catch (e) { imgBottom = margin + 20; }
                     }
 
-                    // Título bajo la imagen, con fondo oscuro propio
+                    // Título bajo la imagen (sobre el degradado)
                     const titleAreaY = imgBottom + 6;
                     const titleAreaH = pageH - titleAreaY - margin;
-                    doc.setFillColor(26, 26, 46);
-                    doc.rect(0, titleAreaY - 2, pageW, titleAreaH + margin + 2, 'F');
 
-                    doc.setTextColor(255, 217, 61); // amarillo dorado
+                    doc.setTextColor(80, 70, 90); // gris oscuro para legibilidad sobre pastel
                     doc.setFontSize(24);
                     const titleLines = doc.splitTextToSize(storyTitle, maxImgW);
                     const lineSpacing = 10;
@@ -742,11 +785,18 @@
                     doc.text(titleLines, pageW / 2, titleStartY, { align: 'center' });
 
                     // Subtítulo con el nombre del protagonista
-                    doc.setTextColor(180, 180, 180);
+                    doc.setTextColor(100, 95, 110);
                     doc.setFontSize(11);
                     doc.text(`Un cuento de ${kidProfile.name || 'mi personaje'}`, pageW / 2, pageH - margin - 4, { align: 'center' });
                     doc.setTextColor(0, 0, 0);
+                } else if (p.isFin) {
+                    drawPdfGradient(doc, pageW, pageH, colorMap[kidProfile.favColor] || '#a855f7');
+                    doc.setTextColor(217, 119, 6);
+                    doc.setFontSize(48);
+                    doc.text('Fin', pageW / 2, pageH / 2, { align: 'center' });
+                    doc.setTextColor(0, 0, 0);
                 } else {
+                    drawPdfGradient(doc, pageW, pageH, colorMap[kidProfile.favColor] || '#a855f7');
                     if (p.imageUrl && p.imageUrl.startsWith('data:image')) {
                         try {
                             const base64 = p.imageUrl.replace(/^data:image\/\w+;base64,/, '');
@@ -772,6 +822,32 @@
             }
 
             doc.save(`${storyTitle.replace(/\s+/g, '-')}.pdf`);
+        }
+
+        function hexToRgb(hex) {
+            const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+            return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : [200, 200, 220];
+        }
+        function pastelize(r, g, b) {
+            return [
+                Math.round(r * 0.4 + 255 * 0.6),
+                Math.round(g * 0.4 + 255 * 0.6),
+                Math.round(b * 0.4 + 255 * 0.6)
+            ];
+        }
+        function drawPdfGradient(doc, pageW, pageH, hexColor) {
+            const [r, g, b] = hexToRgb(hexColor || '#a855f7');
+            const pastel = pastelize(r, g, b);
+            const beige = [254, 249, 231];
+            const steps = 60;
+            for (let i = 0; i < steps; i++) {
+                const t = i / (steps - 1);
+                const cr = Math.round(beige[0] + (pastel[0] - beige[0]) * t);
+                const cg = Math.round(beige[1] + (pastel[1] - beige[1]) * t);
+                const cb = Math.round(beige[2] + (pastel[2] - beige[2]) * t);
+                doc.setFillColor(cr, cg, cb);
+                doc.rect(0, (pageH / steps) * i, pageW, pageH / steps + 1, 'F');
+            }
         }
 
         function getImageDimensions(dataUrl) {
@@ -803,11 +879,14 @@
 
             const VW = 720, VH = 720;
 
+            // Precargar fuente Poppins para el canvas
+            try { await document.fonts.load('16px Poppins'); } catch (_) {}
+
             // ── 1. Preparar todos los assets ANTES de tocar el recorder ──────────────
 
             const storyTitle = kidProfile.storyTitle || `Cuento de ${kidProfile.name || 'Mi personaje'}`;
             const coverPage  = currentStory.find(p => p.isCover);
-            const storyPages = currentStory.filter(p => !p.isCover);
+            const storyPages = currentStory.filter(p => !p.isCover && !p.isFin);
             const totalPages = storyPages.length;
 
             // Precargar imagen de portada
@@ -992,7 +1071,7 @@
                 ctx.fillStyle = '#fdf2f2';
                 ctx.fillRect(0, 0, w, imgAreaH);
                 ctx.fillStyle = '#ccc';
-                ctx.font = `${Math.floor(w / 22)}px sans-serif`;
+                ctx.font = `${Math.floor(w / 22)}px 'Poppins', sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText('Ilustración no disponible', w / 2, imgAreaH / 2);
@@ -1005,11 +1084,11 @@
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
             const fontSize = Math.floor(w / 24);
-            ctx.font = `600 ${fontSize}px sans-serif`;
+            ctx.font = `600 ${fontSize}px 'Poppins', sans-serif`;
             wrapCanvasText(ctx, page.text || '', w / 2, textAreaY + 4, w - 48, fontSize * 1.55);
 
             ctx.fillStyle = '#ff6b6b';
-            ctx.font = `bold ${Math.floor(w / 30)}px sans-serif`;
+            ctx.font = `bold ${Math.floor(w / 30)}px 'Poppins', sans-serif`;
             ctx.textAlign = 'right';
             ctx.textBaseline = 'bottom';
             ctx.fillText(`${pageNum} / ${total}`, w - 18, h - 10);
@@ -1050,7 +1129,7 @@
             let lines = [];
             // Reducir tamaño hasta que quepa en maxLines
             while (fontSize >= minFontSize) {
-                ctx.font = `bold ${fontSize}px sans-serif`;
+                ctx.font = `bold ${fontSize}px 'Poppins', sans-serif`;
                 lines = [];
                 const words = title.split(' ');
                 let line = '';
@@ -1078,7 +1157,7 @@
             ctx.textBaseline = 'alphabetic';
             ctx.shadowColor = 'rgba(0,0,0,0.95)';
             ctx.shadowBlur = 14;
-            ctx.font = `bold ${fontSize}px sans-serif`;
+            ctx.font = `bold ${fontSize}px 'Poppins', sans-serif`;
 
             for (const line of lines) {
                 ctx.fillText(line, w / 2, startY);
@@ -1091,7 +1170,7 @@
             ctx.fillStyle = '#fef9e7';
             ctx.fillRect(0, 0, w, h);
             ctx.fillStyle = '#ff6b6b';
-            ctx.font = `bold ${Math.floor(w / 14)}px 'Quicksand', sans-serif`;
+            ctx.font = `bold ${Math.floor(w / 14)}px 'Poppins', sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             wrapCanvasText(ctx, text, w / 2, h / 2, w - 80, Math.floor(w / 12));
@@ -1123,7 +1202,7 @@
                 ctx.fillStyle = '#fdf2f2';
                 ctx.fillRect(0, 0, w, imgAreaH);
                 ctx.fillStyle = '#ccc';
-                ctx.font = `${Math.floor(w / 22)}px sans-serif`;
+                ctx.font = `${Math.floor(w / 22)}px 'Poppins', sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText('Ilustración no disponible', w / 2, imgAreaH / 2);
@@ -1136,11 +1215,11 @@
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
             const fontSize = Math.floor(w / 24);
-            ctx.font = `600 ${fontSize}px 'Quicksand', sans-serif`;
+            ctx.font = `600 ${fontSize}px 'Poppins', sans-serif`;
             wrapCanvasText(ctx, page.text || '', w / 2, textAreaY, w - 48, fontSize * 1.5);
 
             ctx.fillStyle = '#ff6b6b';
-            ctx.font = `bold ${Math.floor(w / 30)}px 'Quicksand', sans-serif`;
+            ctx.font = `bold ${Math.floor(w / 30)}px 'Poppins', sans-serif`;
             ctx.textAlign = 'right';
             ctx.textBaseline = 'bottom';
             ctx.fillText(`${pageNum} / ${total}`, w - 18, h - 10);
