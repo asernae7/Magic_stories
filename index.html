@@ -118,6 +118,25 @@
                     </select>
                 </div>
 
+                <div class="input-group border-t pt-4 border-yellow-100">
+                    <label>🎯 Tema del cuento</label>
+                    <select id="storyTheme" onchange="applyTheme(this.value)" class="w-full rounded-xl border-2 border-yellow-200 p-3">
+                        <option value="">— Tema libre —</option>
+                        <option value="chupo">Dejar el chupo</option>
+                        <option value="hermana">Esperando una hermanita nueva</option>
+                        <option value="hermano">Esperando un hermanito nuevo</option>
+                        <option value="colegio">Mi primer día de colegio</option>
+                        <option value="navidad">Ayudar a Santa a rescatar la Navidad</option>
+                        <option value="monstruo">El monstruo debajo de la cama (que es amigo)</option>
+                        <option value="dientes">Visita al dentista valiente</option>
+                        <option value="oscuridad">Vencer el miedo a la oscuridad</option>
+                        <option value="comer">Aprender a comer de todo</option>
+                        <option value="mascotas">Cuidar a una mascota nueva</option>
+                        <option value="mudanza">Mudarse a una casa nueva</option>
+                        <option value="amigos">Hacer amigos en un lugar desconocido</option>
+                    </select>
+                </div>
+
                 <div class="input-group">
                     <label>¿Qué le gusta mucho?</label>
                     <input type="text" id="kidInterests" class="w-full rounded-xl border-2 border-yellow-200 p-3" placeholder="Ej. los barcos piratas">
@@ -126,6 +145,35 @@
                 <div class="input-group">
                     <label>Valor o enseñanza</label>
                     <input type="text" id="moralValue" class="w-full rounded-xl border-2 border-yellow-200 p-3" placeholder="Ej. ser valiente">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 border-t pt-4 border-yellow-100">
+                    <div class="input-group">
+                        <label>🎨 Estilo visual</label>
+                        <select id="artStyle" class="w-full rounded-xl border-2 border-yellow-200 p-3">
+                            <option value="acuarela">Acuarela mágica</option>
+                            <option value="clasico">Libro infantil clásico</option>
+                            <option value="pixar">Animación 3D Pixar</option>
+                            <option value="ghibli">Estudio Ghibli</option>
+                            <option value="comic">Cómic colorido</option>
+                            <option value="oleo">Óleo al estilo cuento europeo</option>
+                            <option value="recortes">Collage de recortes de papel</option>
+                            <option value="minimalista">Ilustración minimalista moderna</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>📖 Tipo de historia</label>
+                        <select id="storyType" class="w-full rounded-xl border-2 border-yellow-200 p-3">
+                            <option value="fantasia">Fantasía mágica</option>
+                            <option value="realista">Realista cotidiana</option>
+                            <option value="ciencia-ficcion">Ciencia ficción</option>
+                            <option value="aventura">Aventura épica</option>
+                            <option value="humor">Comedia y humor</option>
+                            <option value="naturaleza">Naturaleza y animales</option>
+                            <option value="misterio">Misterio y detectives</option>
+                            <option value="superpoderes">Superhéroes y superpoderes</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="input-group border-t pt-4 border-yellow-100">
@@ -157,6 +205,9 @@
                         <div class="loader"></div>
                         <p class="text-xs font-bold text-gray-400 uppercase">Dibujando...</p>
                     </div>
+                    <div id="cover-title-overlay" class="hidden absolute inset-0 flex items-end justify-center p-6" style="background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%);">
+                        <h2 id="cover-title-text" class="kids-title text-center text-white drop-shadow-lg" style="font-size: clamp(1.2rem, 5vw, 2rem); text-shadow: 2px 2px 8px rgba(0,0,0,0.8);"></h2>
+                    </div>
                 </div>
                 
                 <div class="p-6 relative">
@@ -183,9 +234,22 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                 </button>
             </div>
+            <div id="pdf-download-area" class="hidden mt-4 space-y-2 text-center">
+                <button type="button" onclick="downloadStoryPdf()" class="btn-primary px-6 py-3 text-white font-bold rounded-2xl inline-flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Descargar cuento en PDF
+                </button>
+                <br>
+                <button type="button" onclick="downloadStoryVideo()" id="videoBtn" class="px-6 py-3 text-white font-bold rounded-2xl inline-flex items-center gap-2" style="background:#a855f7; box-shadow: 0 4px 0 #7e22ce;">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.677v6.646a1 1 0 01-1.447.894L15 14M4 8h11a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"></path></svg>
+                    Descargar video con narración
+                </button>
+                <p id="video-progress" class="hidden text-sm font-bold text-purple-600 italic"></p>
+            </div>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         const apiKey = ""; 
         let currentStory = [];
@@ -198,9 +262,105 @@
             'amarillo': '#facc15', 'morado': '#a855f7', 'rosado': '#ec4899'
         };
 
+        const storyThemes = {
+            '':         { interests: '', value: '', context: '' },
+            'chupo':    {
+                interests: 'su chupo',
+                value: 'crecer con valentía',
+                context: 'El cuento trata sobre dejar el chupo: el/la protagonista descubre que ya es mayor y, con mucho cariño y valentía, da el gran paso de despedirse de su chupo para siempre. El tono debe ser tierno y empoderador, nunca triste.'
+            },
+            'hermana':  {
+                interests: 'bebés y la familia',
+                value: 'amor familiar y compartir',
+                context: 'El cuento trata sobre la llegada de una hermanita nueva: el/la protagonista siente curiosidad y un poco de nervios, pero aprende que tener una hermana es una aventura llena de amor. El tono es dulce y emocionante.'
+            },
+            'hermano':  {
+                interests: 'bebés y la familia',
+                value: 'amor familiar y compartir',
+                context: 'El cuento trata sobre la llegada de un hermanito nuevo: el/la protagonista siente curiosidad y un poco de nervios, pero aprende que tener un hermano es una aventura llena de amor. El tono es dulce y emocionante.'
+            },
+            'colegio':  {
+                interests: 'aprender cosas nuevas',
+                value: 'valentía y hacer amigos',
+                context: 'El cuento trata sobre el primer día de colegio: el/la protagonista tiene mariposas en la barriga pero descubre que el colegio es un lugar mágico lleno de amigos y aventuras. El tono es animado y esperanzador.'
+            },
+            'navidad':  {
+                interests: 'la Navidad y los regalos',
+                value: 'generosidad y trabajo en equipo',
+                context: 'El cuento trata sobre ayudar a Santa Claus a rescatar la Navidad: los renos se perdieron o los regalos desaparecieron, y el/la protagonista usa su ingenio y valentía para salvar la Navidad para todos los niños del mundo. El tono es mágico y festivo.'
+            },
+            'monstruo': {
+                interests: 'los monstruos amigos',
+                value: 'perder el miedo con amabilidad',
+                context: 'El cuento trata sobre un monstruo que vive debajo de la cama, pero en realidad es un monstruo tímido que solo quiere un amigo. El/la protagonista descubre que lo que parecía aterrador es en realidad adorable. Tono: aventurero y divertido.'
+            },
+            'dientes':  {
+                interests: 'cuidar los dientes',
+                value: 'valentía ante lo desconocido',
+                context: 'El cuento trata sobre una visita al dentista: el/la protagonista descubre que el dentista es un héroe que protege los dientes mágicos, y que ser valiente no significa no tener miedo sino ir aunque lo tengas. Tono: tranquilizador y divertido.'
+            },
+            'oscuridad': {
+                interests: 'las estrellas y la noche',
+                value: 'vencer el miedo con curiosidad',
+                context: 'El cuento trata sobre vencer el miedo a la oscuridad: el/la protagonista descubre que la noche está llena de cosas mágicas, estrellas, luciérnagas y sueños, y que la oscuridad es en realidad una amiga. Tono: poético y tranquilizador.'
+            },
+            'comer':    {
+                interests: 'descubrir sabores nuevos',
+                value: 'curiosidad y apertura',
+                context: 'El cuento trata sobre aprender a comer de todo: el/la protagonista encuentra un ingrediente misterioso que al probarlo abre un mundo de aventuras y sabores mágicos. Tono: divertido y sensorial.'
+            },
+            'mascotas': {
+                interests: 'los animales',
+                value: 'responsabilidad y amor',
+                context: 'El cuento trata sobre cuidar a una mascota nueva: el/la protagonista aprende que tener una mascota trae mucha alegría pero también responsabilidad, y que el amor se demuestra con cuidados diarios. Tono: tierno y emotivo.'
+            },
+            'mudanza':  {
+                interests: 'explorar lugares nuevos',
+                value: 'adaptarse con valentía',
+                context: 'El cuento trata sobre mudarse a una casa nueva: el/la protagonista siente tristeza al dejar su antiguo hogar, pero descubre que el nuevo lugar guarda aventuras y amigos inesperados. Tono: esperanzador y reconfortante.'
+            },
+            'amigos':   {
+                interests: 'conocer personas nuevas',
+                value: 'amabilidad y apertura',
+                context: 'El cuento trata sobre hacer amigos en un lugar desconocido: el/la protagonista llega a un lugar nuevo donde no conoce a nadie, y con un gesto de amabilidad comienza la amistad más especial de su vida. Tono: cálido y motivador.'
+            }
+        };
+
+        const artStyles = {
+            'acuarela':     { label: 'acuarela mágica',                   imageStyle: 'watercolor painting, soft brushstrokes, magical pastel colors, children\'s book watercolor illustration, whimsical' },
+            'clasico':      { label: 'libro infantil clásico',             imageStyle: 'classic children\'s book illustration, vintage storybook art, warm colors, detailed hand-drawn, like a 1950s picture book' },
+            'pixar':        { label: 'animación 3D estilo Pixar',          imageStyle: '3D animated style similar to Pixar movies, vibrant colors, expressive characters, cinematic lighting, high quality render' },
+            'ghibli':       { label: 'Estudio Ghibli',                     imageStyle: 'Studio Ghibli anime style, soft detailed background, hand-drawn animation, painterly, warm natural colors, Hayao Miyazaki aesthetic' },
+            'comic':        { label: 'cómic colorido',                     imageStyle: 'colorful comic book style, bold outlines, flat bright colors, dynamic composition, children\'s comic art' },
+            'oleo':         { label: 'óleo estilo cuento europeo',         imageStyle: 'oil painting style, rich textures, European fairy tale illustration, detailed classical painting, warm golden tones' },
+            'recortes':     { label: 'collage de recortes de papel',       imageStyle: 'paper cut-out collage illustration, layered paper craft, flat shapes, colorful paper textures, children\'s craft aesthetic' },
+            'minimalista':  { label: 'ilustración minimalista moderna',    imageStyle: 'minimalist modern illustration, clean simple shapes, limited color palette, flat design, contemporary children\'s book art' }
+        };
+
+        const storyTypes = {
+            'fantasia':         { label: 'fantasía mágica',       instruction: 'El cuento es de fantasía mágica: incluye elementos como magia, hechizos, criaturas fantásticas, reinos encantados o poderes especiales. El tono es maravilloso y lleno de imaginación.' },
+            'realista':         { label: 'realismo cotidiano',     instruction: 'El cuento es realista y cotidiano: sucede en el mundo real de hoy en día, sin elementos fantásticos. Las situaciones y personajes son creíbles y cercanos a la vida diaria del niño.' },
+            'ciencia-ficcion':  { label: 'ciencia ficción',        instruction: 'El cuento es de ciencia ficción infantil: incluye elementos como robots, naves espaciales, planetas lejanos, inventos futuristas o viajes en el tiempo, explicados de forma simple y divertida.' },
+            'aventura':         { label: 'aventura épica',         instruction: 'El cuento es una aventura épica: el protagonista emprende un viaje o misión llena de retos, descubrimientos y acción. Cada página avanza hacia un gran objetivo.' },
+            'humor':            { label: 'comedia y humor',        instruction: 'El cuento es de humor y comedia: las situaciones son absurdas, graciosas o inesperadas. El tono es divertido y busca hacer reír al niño con giros cómicos y personajes simpáticos.' },
+            'naturaleza':       { label: 'naturaleza y animales',  instruction: 'El cuento trata sobre la naturaleza y los animales: el protagonista interactúa con animales, bosques, océanos o el medio ambiente. El tono celebra la naturaleza y transmite respeto por ella.' },
+            'misterio':         { label: 'misterio y detectives',  instruction: 'El cuento es de misterio: hay un enigma o problema por resolver. El protagonista actúa como un pequeño detective usando lógica y observación. El tono es intrigante pero apropiado para niños.' },
+            'superpoderes':     { label: 'superhéroes',            instruction: 'El cuento es de superhéroes: el protagonista descubre o usa superpoderes para ayudar a otros. El tono es emocionante y empoderador, destacando que el verdadero superpoder es la bondad.' }
+        };
+
+        function applyTheme(themeKey) {
+            const theme = storyThemes[themeKey];
+            if (!theme) return;
+            if (theme.interests) document.getElementById('kidInterests').value = theme.interests;
+            if (theme.value) document.getElementById('moralValue').value = theme.value;
+        }
+
         async function generateStory() {
             const name = document.getElementById('kidName').value;
             if (!name) return alert("¡Dime el nombre del protagonista!");
+
+            const selectedThemeKey = document.getElementById('storyTheme').value;
+            const selectedTheme = storyThemes[selectedThemeKey] || storyThemes[''];
 
             kidProfile = {
                 name,
@@ -211,7 +371,10 @@
                 favColor: document.getElementById('favColor').value,
                 interests: document.getElementById('kidInterests').value || "aventuras",
                 value: document.getElementById('moralValue').value || "bondad",
-                imageModel: document.getElementById('imageModel').value || "imagen"
+                imageModel: document.getElementById('imageModel').value || "imagen",
+                themeContext: selectedTheme.context || '',
+                artStyleKey: document.getElementById('artStyle').value || 'acuarela',
+                storyTypeKey: document.getElementById('storyType').value || 'fantasia'
             };
 
             // Estilizar interfaz según color favorito
@@ -221,16 +384,28 @@
             document.getElementById('setup-screen').classList.add('hidden');
             document.getElementById('loading-screen').classList.remove('hidden');
 
+            const selectedStyle = artStyles[kidProfile.artStyleKey] || artStyles['acuarela'];
+            const selectedType = storyTypes[kidProfile.storyTypeKey] || storyTypes['fantasia'];
+
+            const themeInstruction = kidProfile.themeContext
+                ? `\n            TEMA CENTRAL DEL CUENTO (es obligatorio seguirlo): ${kidProfile.themeContext}`
+                : '';
+
             const storyPrompt = `Eres un autor de cuentos infantiles. Crea un cuento de 5 páginas. Todo debe estar en español: el texto del cuento y las descripciones de imagen.
             Protagonista: ${kidProfile.gender} de ${kidProfile.age} años llamado ${kidProfile.name}.
             Rasgos físicos OBLIGATORIOS en TODAS las ilustraciones: pelo ${kidProfile.hair}, piel ${kidProfile.skin}. El personaje debe verse igual en todas las páginas.
             Color favorito: ${kidProfile.favColor} (menciónalo sutilmente en la historia).
             Intereses: ${kidProfile.interests}. Valor: ${kidProfile.value}.
+            TIPO DE HISTORIA (obligatorio): ${selectedType.instruction}${themeInstruction}
             
-            Regla para imagePrompt: En cada página, la descripción visual DEBE incluir explícitamente "niño/niña con pelo ${kidProfile.hair} y piel ${kidProfile.skin}" y "estilo acuarela mágica, colores vibrantes". Describe la escena pero siempre con el mismo protagonista y el mismo estilo.
+            Regla para imagePrompt: En cada página la descripción visual DEBE incluir: "${kidProfile.gender} con pelo ${kidProfile.hair} y piel ${kidProfile.skin}", "${selectedStyle.label}", colores vibrantes. Mismo protagonista en todas las páginas.
             
-            Responde ÚNICAMENTE en JSON con este formato (usa las claves "pages", "text" e "imagePrompt"):
-            { "pages": [ { "text": "máximo 3 frases en español", "imagePrompt": "descripción de la escena en español, incluyendo: protagonista con pelo ${kidProfile.hair} y piel ${kidProfile.skin}, estilo acuarela mágica" } ] }`;
+            Responde ÚNICAMENTE en JSON con este formato exacto:
+            {
+              "title": "título creativo e imaginativo del cuento en español (máx 8 palabras)",
+              "coverImagePrompt": "descripción visual de la imagen de portada: escena épica y atractiva que capture la esencia del cuento, con el protagonista con pelo ${kidProfile.hair} y piel ${kidProfile.skin}, ${selectedStyle.label}, sin texto ni letras",
+              "pages": [ { "text": "máximo 3 frases en español", "imagePrompt": "descripción de la escena en español, incluyendo: protagonista con pelo ${kidProfile.hair} y piel ${kidProfile.skin}, ${selectedStyle.label}" } ]
+            }`;
 
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
@@ -248,9 +423,20 @@
                     err.apiError = data.error || { code: res.status };
                     throw err;
                 }
-                currentStory = JSON.parse(data.candidates[0].content.parts[0].text).pages.map(p => ({
-                    ...p, imageUrl: null, audioObject: null, status: 'pending'
-                }));
+                const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
+                kidProfile.storyTitle = parsed.title || `El cuento de ${kidProfile.name}`;
+
+                // Portada como página 0
+                const coverPage = {
+                    isCover: true,
+                    title: kidProfile.storyTitle,
+                    text: '',
+                    imagePrompt: parsed.coverImagePrompt || '',
+                    imageUrl: null, audioObject: null, status: 'pending'
+                };
+                currentStory = [coverPage, ...parsed.pages.map(p => ({
+                    ...p, isCover: false, imageUrl: null, audioObject: null, status: 'pending'
+                }))];
 
                 initBookUI();
                 processStoryAssets(); 
@@ -275,14 +461,19 @@
                 updateDot(i, 'loading');
 
                 try {
-                    // Prompt fijo al inicio: estilo y personaje obligatorios en todas las imágenes
-                    const personajeFijo = `${kidProfile.gender} con pelo ${kidProfile.hair} y piel ${kidProfile.skin}, mismo personaje en todas las escenas`;
-                    const estiloFijo = `ilustración en estilo acuarela mágica, colores vibrantes, toques de ${kidProfile.favColor}, aspecto de cuento infantil`;
-                    const visualPrompt = `${estiloFijo}. ${personajeFijo}. Escena: ${currentStory[i].imagePrompt}. Repetir: el protagonista tiene pelo ${kidProfile.hair} y piel ${kidProfile.skin}. Estilo acuarela mágica. Sin texto ni letras en la imagen.`;
-                    
+                    const style = artStyles[kidProfile.artStyleKey] || artStyles['acuarela'];
+                    const personajeFijo = `${kidProfile.gender} with ${kidProfile.hair} hair and ${kidProfile.skin} skin tone, same character in every scene`;
+                    const estiloFijo = `${style.imageStyle}, touches of ${kidProfile.favColor}, children's book illustration`;
+                    const visualPrompt = `${estiloFijo}. ${personajeFijo}. Scene: ${currentStory[i].imagePrompt}. Important: protagonist has ${kidProfile.hair} hair and ${kidProfile.skin} skin. ${style.imageStyle}. No text or letters in the image.`;
+
+                    // Para la portada: audio del título + "Un cuento de [nombre]"
+                    const audioText = currentStory[i].isCover
+                        ? `${currentStory[i].title || kidProfile.storyTitle}. Un cuento de ${kidProfile.name}.`
+                        : currentStory[i].text;
+
                     const [imgUrl, audioObj] = await Promise.all([
                         generateImage(visualPrompt),
-                        generateAudio(currentStory[i].text)
+                        generateAudio(audioText)
                     ]);
 
                     currentStory[i].imageUrl = imgUrl;
@@ -415,22 +606,48 @@
         function updatePageView() {
             if (activeAudio) { activeAudio.pause(); activeAudio = null; }
             const page = currentStory[currentPage];
-            document.getElementById('page-text').innerText = page.text;
-            document.getElementById('pageCounter').innerText = `${currentPage + 1} / ${currentStory.length}`;
+
+            // Portada: ocultar texto y botón de audio; mostrar overlay del título
+            const isCover = page.isCover === true;
+            const pageText = document.getElementById('page-text');
+            const audioBtn = document.getElementById('audioBtn');
+            const coverOverlay = document.getElementById('cover-title-overlay');
+            const coverTitleText = document.getElementById('cover-title-text');
+
+            pageText.innerText = isCover ? '' : (page.text || '');
+            pageText.classList.toggle('hidden', isCover);
+            audioBtn.classList.toggle('hidden', isCover);
+
+            if (isCover) {
+                coverTitleText.innerText = page.title || kidProfile.storyTitle || '';
+            }
+
+            // Contador: portada = "Portada", páginas = "1 / N" (sin contar portada)
+            const storyPages = currentStory.length - 1;
+            if (isCover) {
+                document.getElementById('pageCounter').innerText = 'Portada';
+            } else {
+                document.getElementById('pageCounter').innerText = `${currentPage} / ${storyPages}`;
+            }
+
             document.getElementById('prevBtn').disabled = currentPage === 0;
             document.getElementById('nextBtn').disabled = currentPage === currentStory.length - 1;
-            
+            const pdfArea = document.getElementById('pdf-download-area');
+            if (pdfArea) pdfArea.classList.toggle('hidden', currentPage !== currentStory.length - 1);
+
             const imgEl = document.getElementById('page-image');
             imgEl.classList.add('opacity-0');
-            imgEl.src = ""; 
+            imgEl.src = '';
             refreshPageAssets();
         }
 
         function refreshPageAssets() {
             const page = currentStory[currentPage];
+            const isCover = page.isCover === true;
             const imgEl = document.getElementById('page-image');
             const placeholder = document.getElementById('img-placeholder');
             const audioBtn = document.getElementById('audioBtn');
+            const coverOverlay = document.getElementById('cover-title-overlay');
 
             if (page.imageUrl) {
                 const tempImg = new Image();
@@ -438,12 +655,17 @@
                     imgEl.src = page.imageUrl;
                     imgEl.classList.remove('opacity-0');
                     placeholder.classList.add('hidden');
+                    // Mostrar overlay del título solo en portada y cuando la imagen cargó
+                    coverOverlay.classList.toggle('hidden', !isCover);
                 };
                 tempImg.src = page.imageUrl;
             } else {
                 placeholder.classList.remove('hidden');
+                coverOverlay.classList.add('hidden');
             }
-            audioBtn.classList.toggle('animate-bounce', page.status === 'ready' && !page.audioPlayed);
+            if (!isCover) {
+                audioBtn.classList.toggle('animate-bounce', page.status === 'ready' && !page.audioPlayed);
+            }
         }
 
         function playCurrentAudio() {
@@ -462,6 +684,485 @@
         }
 
         function changePage(dir) { currentPage += dir; updatePageView(); }
+
+        async function downloadStoryPdf() {
+            if (typeof window.jspdf === 'undefined') {
+                alert("No se pudo cargar la herramienta de PDF. Recarga la página e inténtalo de nuevo.");
+                return;
+            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageW = doc.internal.pageSize.getWidth();
+            const pageH = doc.internal.pageSize.getHeight();
+            const margin = 15;
+            const maxImgW = pageW - margin * 2;
+            const maxImgH = pageH - margin * 2 - 35;
+            const storyTitle = kidProfile.storyTitle || `Cuento de ${kidProfile.name || 'Mi personaje'}`;
+
+            for (let i = 0; i < currentStory.length; i++) {
+                const p = currentStory[i];
+                if (i > 0) doc.addPage();
+                let y = margin;
+
+                if (p.isCover) {
+                    // Fondo sólido para la portada
+                    doc.setFillColor(26, 26, 46);
+                    doc.rect(0, 0, pageW, pageH, 'F');
+
+                    // Imagen de portada
+                    let imgBottom = margin;
+                    if (p.imageUrl && p.imageUrl.startsWith('data:image')) {
+                        try {
+                            const base64 = p.imageUrl.replace(/^data:image\/\w+;base64,/, '');
+                            const fmt = p.imageUrl.indexOf('jpeg') !== -1 || p.imageUrl.indexOf('jpg') !== -1 ? 'JPEG' : 'PNG';
+                            const imgDims = await getImageDimensions(p.imageUrl);
+                            const imgRatio = imgDims ? imgDims.h / imgDims.w : 1;
+                            // Imagen ocupa el 75% superior de la página
+                            const maxCoverImgH = pageH * 0.72;
+                            let drawW = maxImgW, drawH = maxImgW * imgRatio;
+                            if (drawH > maxCoverImgH) { drawH = maxCoverImgH; drawW = maxCoverImgH / imgRatio; }
+                            const offsetX = margin + (maxImgW - drawW) / 2;
+                            doc.addImage(base64, fmt, offsetX, margin, drawW, drawH);
+                            imgBottom = margin + drawH;
+                        } catch (e) { imgBottom = margin + 20; }
+                    }
+
+                    // Título bajo la imagen, con fondo oscuro propio
+                    const titleAreaY = imgBottom + 6;
+                    const titleAreaH = pageH - titleAreaY - margin;
+                    doc.setFillColor(26, 26, 46);
+                    doc.rect(0, titleAreaY - 2, pageW, titleAreaH + margin + 2, 'F');
+
+                    doc.setTextColor(255, 217, 61); // amarillo dorado
+                    doc.setFontSize(24);
+                    const titleLines = doc.splitTextToSize(storyTitle, maxImgW);
+                    const lineSpacing = 10;
+                    const totalTitleH = titleLines.length * lineSpacing;
+                    const titleStartY = titleAreaY + (titleAreaH - totalTitleH) / 2 + 8;
+                    doc.text(titleLines, pageW / 2, titleStartY, { align: 'center' });
+
+                    // Subtítulo con el nombre del protagonista
+                    doc.setTextColor(180, 180, 180);
+                    doc.setFontSize(11);
+                    doc.text(`Un cuento de ${kidProfile.name || 'mi personaje'}`, pageW / 2, pageH - margin - 4, { align: 'center' });
+                    doc.setTextColor(0, 0, 0);
+                } else {
+                    if (p.imageUrl && p.imageUrl.startsWith('data:image')) {
+                        try {
+                            const base64 = p.imageUrl.replace(/^data:image\/\w+;base64,/, '');
+                            const fmt = p.imageUrl.indexOf('jpeg') !== -1 || p.imageUrl.indexOf('jpg') !== -1 ? 'JPEG' : 'PNG';
+                            const imgDims = await getImageDimensions(p.imageUrl);
+                            const imgRatio = imgDims ? imgDims.h / imgDims.w : 1;
+                            let drawW = maxImgW, drawH = maxImgW * imgRatio;
+                            if (drawH > maxImgH) { drawH = maxImgH; drawW = maxImgH / imgRatio; }
+                            doc.addImage(base64, fmt, margin, y, drawW, drawH);
+                            y += drawH + 10;
+                        } catch (e) {
+                            const drawH = Math.min(maxImgW, 70);
+                            doc.setDrawColor(200, 200, 200);
+                            doc.rect(margin, y, maxImgW, drawH);
+                            doc.text("(Ilustración no disponible)", margin + maxImgW / 2 - 25, y + drawH / 2 - 3);
+                            y += drawH + 10;
+                        }
+                    }
+                    doc.setFontSize(12);
+                    const lines = doc.splitTextToSize(p.text || '', pageW - margin * 2);
+                    doc.text(lines, margin, y);
+                }
+            }
+
+            doc.save(`${storyTitle.replace(/\s+/g, '-')}.pdf`);
+        }
+
+        function getImageDimensions(dataUrl) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
+                img.onerror = () => resolve(null);
+                img.src = dataUrl;
+            });
+        }
+
+        function pickVideoMimeType() {
+            const candidates = [
+                'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+                'video/mp4',
+                'video/webm;codecs=vp9,opus',
+                'video/webm;codecs=vp8,opus',
+                'video/webm'
+            ];
+            return candidates.find(t => MediaRecorder.isTypeSupported(t)) || 'video/webm';
+        }
+
+        async function downloadStoryVideo() {
+            const btn = document.getElementById('videoBtn');
+            const progress = document.getElementById('video-progress');
+            btn.disabled = true;
+            btn.style.opacity = '0.6';
+            progress.classList.remove('hidden');
+
+            const VW = 720, VH = 720;
+
+            // ── 1. Preparar todos los assets ANTES de tocar el recorder ──────────────
+
+            const storyTitle = kidProfile.storyTitle || `Cuento de ${kidProfile.name || 'Mi personaje'}`;
+            const coverPage  = currentStory.find(p => p.isCover);
+            const storyPages = currentStory.filter(p => !p.isCover);
+            const totalPages = storyPages.length;
+
+            // Precargar imagen de portada
+            progress.textContent = 'Preparando portada...';
+            let coverImg = null;
+            if (coverPage?.imageUrl?.startsWith('data:image')) {
+                coverImg = await new Promise(res => {
+                    const img = new Image();
+                    img.onload = () => res(img);
+                    img.onerror = () => res(null);
+                    img.src = coverPage.imageUrl;
+                });
+            }
+
+            // Precargar imágenes de páginas
+            progress.textContent = 'Preparando imágenes...';
+            const pageImgs = [];
+            for (const p of storyPages) {
+                if (p.imageUrl?.startsWith('data:image')) {
+                    const img = await new Promise(res => {
+                        const i = new Image();
+                        i.onload = () => res(i);
+                        i.onerror = () => res(null);
+                        i.src = p.imageUrl;
+                    });
+                    pageImgs.push(img);
+                } else {
+                    pageImgs.push(null);
+                }
+            }
+
+            // ── 2. Crear canvas y dibujar la portada ─────────────────────────────────
+
+            const canvas = document.createElement('canvas');
+            canvas.width = VW;
+            canvas.height = VH;
+            canvas.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none;';
+            document.body.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            renderCoverFrame(ctx, VW, VH, coverImg, storyTitle);
+            await sleep(100);
+
+            // ── 3. AudioContext activo + decodificar TODOS los audios (portada + páginas) ─
+
+            const audioCtx = new AudioContext();
+            await audioCtx.resume();
+            const dest = audioCtx.createMediaStreamDestination();
+
+            // Nodo silencioso permanente: garantiza que dest.stream siempre tenga pista de audio
+            const silentOsc = audioCtx.createOscillator();
+            const silentGain = audioCtx.createGain();
+            silentGain.gain.value = 0;
+            silentOsc.connect(silentGain);
+            silentGain.connect(dest);
+            silentOsc.start();
+
+            progress.textContent = 'Preparando audio...';
+
+            // Helper: decodifica el blob URL de un audioObject
+            const decodeAudio = async (audioObj) => {
+                if (!audioObj?.src) return null;
+                try {
+                    const arr = await fetch(audioObj.src).then(r => r.arrayBuffer());
+                    return await audioCtx.decodeAudioData(arr);
+                } catch (e) {
+                    console.warn('Audio no decodificado', e);
+                    return null;
+                }
+            };
+
+            // Decodificar audio de portada
+            const coverAudioBuf = await decodeAudio(coverPage?.audioObject);
+
+            // Decodificar audios de páginas
+            const audioBuffers = [];
+            for (const p of storyPages) {
+                audioBuffers.push(await decodeAudio(p.audioObject));
+            }
+
+            // ── 4. Stream combinado + recorder ────────────────────────────────────────
+
+            const videoStream = canvas.captureStream(30);
+            const combinedStream = new MediaStream([
+                ...videoStream.getVideoTracks(),
+                ...dest.stream.getAudioTracks()
+            ]);
+
+            const mimeType = pickVideoMimeType();
+            const isMP4 = mimeType.startsWith('video/mp4');
+            const ext = isMP4 ? 'mp4' : 'webm';
+
+            const recorder = new MediaRecorder(combinedStream, { mimeType });
+            const chunks = [];
+            recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
+            // Helper: reproducir un buffer en el dest y esperar a que termine
+            const playBuffer = (buf) => new Promise(resolve => {
+                const source = audioCtx.createBufferSource();
+                source.buffer = buf;
+                source.connect(dest);
+                source.start();
+                source.onended = resolve;
+            });
+
+            // Loop de refresco a 30 fps
+            let currentDrawFn = () => renderCoverFrame(ctx, VW, VH, coverImg, storyTitle);
+            const drawInterval = setInterval(() => currentDrawFn(), 1000 / 30);
+
+            // ── 5. Grabar ─────────────────────────────────────────────────────────────
+
+            recorder.start(100);
+
+            // PORTADA: imagen + audio del título
+            progress.textContent = 'Grabando portada...';
+            currentDrawFn = () => renderCoverFrame(ctx, VW, VH, coverImg, storyTitle);
+            currentDrawFn();
+            if (coverAudioBuf) {
+                await playBuffer(coverAudioBuf);
+                await sleep(800);
+            } else {
+                await sleep(4000);
+            }
+
+            // PÁGINAS: imagen + texto + audio sincronizado
+            for (let i = 0; i < storyPages.length; i++) {
+                progress.textContent = `Grabando página ${i + 1} de ${totalPages}...`;
+                currentDrawFn = () => renderPageFrameSync(ctx, VW, VH, storyPages[i], pageImgs[i], i + 1, totalPages);
+                currentDrawFn();
+
+                if (audioBuffers[i]) {
+                    await playBuffer(audioBuffers[i]);
+                    await sleep(600);
+                } else {
+                    await sleep(4000);
+                }
+            }
+
+            // Cierre
+            progress.textContent = 'Finalizando...';
+            currentDrawFn = () => renderTitleFrame(ctx, VW, VH, '✨ Fin ✨');
+            currentDrawFn();
+            await sleep(2500);
+
+            clearInterval(drawInterval);
+            recorder.stop();
+            await new Promise(r => recorder.onstop = r);
+
+            document.body.removeChild(canvas);
+            audioCtx.close();
+
+            const blob = new Blob(chunks, { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${(kidProfile.storyTitle || `Cuento-${kidProfile.name || 'personaje'}`).replace(/\s+/g, '-')}.${ext}`;
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 15000);
+
+            progress.textContent = isMP4
+                ? '¡Video MP4 listo! ✅'
+                : '¡Video WebM listo! (compatible con VLC, Chrome y Firefox) ✅';
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        }
+
+        // Versión síncrona de renderPageFrame que acepta imagen ya cargada
+        function renderPageFrameSync(ctx, w, h, page, pageImg, pageNum, total) {
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, w, h);
+
+            const imgAreaH = h * 0.62;
+            const textAreaY = imgAreaH + 12;
+            const textAreaH = h - textAreaY - 10;
+
+            if (pageImg) {
+                const imgRatio = pageImg.naturalWidth / pageImg.naturalHeight;
+                let drawW = w, drawH = w / imgRatio;
+                if (drawH > imgAreaH) { drawH = imgAreaH; drawW = imgAreaH * imgRatio; }
+                const offsetX = (w - drawW) / 2;
+                ctx.drawImage(pageImg, offsetX, 0, drawW, drawH);
+            } else {
+                ctx.fillStyle = '#fdf2f2';
+                ctx.fillRect(0, 0, w, imgAreaH);
+                ctx.fillStyle = '#ccc';
+                ctx.font = `${Math.floor(w / 22)}px sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Ilustración no disponible', w / 2, imgAreaH / 2);
+            }
+
+            ctx.fillStyle = 'rgba(255,255,255,0.92)';
+            ctx.fillRect(0, textAreaY - 6, w, textAreaH + 16);
+
+            ctx.fillStyle = '#374151';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            const fontSize = Math.floor(w / 24);
+            ctx.font = `600 ${fontSize}px sans-serif`;
+            wrapCanvasText(ctx, page.text || '', w / 2, textAreaY + 4, w - 48, fontSize * 1.55);
+
+            ctx.fillStyle = '#ff6b6b';
+            ctx.font = `bold ${Math.floor(w / 30)}px sans-serif`;
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(`${pageNum} / ${total}`, w - 18, h - 10);
+        }
+
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        function renderCoverFrame(ctx, w, h, img, title) {
+            // Fondo oscuro de respaldo
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, w, h);
+
+            // Imagen de portada (cover fit)
+            if (img) {
+                const ratio = img.naturalWidth / img.naturalHeight;
+                let dw = w, dh = w / ratio;
+                if (dh < h) { dh = h; dw = h * ratio; }
+                const ox = (w - dw) / 2, oy = (h - dh) / 2;
+                ctx.drawImage(img, ox, oy, dw, dh);
+            }
+
+            // Banda de gradiente en la parte inferior
+            const bandH = Math.floor(h * 0.38);
+            const grad = ctx.createLinearGradient(0, h - bandH, 0, h);
+            grad.addColorStop(0, 'rgba(0,0,0,0)');
+            grad.addColorStop(0.5, 'rgba(0,0,0,0.7)');
+            grad.addColorStop(1, 'rgba(0,0,0,0.88)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, h - bandH, w, bandH);
+
+            // Título: calcular líneas y centrarlas en la banda
+            const maxFontSize = Math.floor(w / 10);
+            const minFontSize = Math.floor(w / 18);
+            const maxWidth = w - 80;
+            const maxLines = 3;
+
+            let fontSize = maxFontSize;
+            let lines = [];
+            // Reducir tamaño hasta que quepa en maxLines
+            while (fontSize >= minFontSize) {
+                ctx.font = `bold ${fontSize}px sans-serif`;
+                lines = [];
+                const words = title.split(' ');
+                let line = '';
+                for (const word of words) {
+                    const test = line ? line + ' ' + word : word;
+                    if (ctx.measureText(test).width > maxWidth && line) {
+                        lines.push(line);
+                        line = word;
+                    } else {
+                        line = test;
+                    }
+                }
+                if (line) lines.push(line);
+                if (lines.length <= maxLines) break;
+                fontSize -= 4;
+            }
+
+            const lineH = fontSize * 1.3;
+            const totalTextH = lines.length * lineH;
+            // Centrar el bloque de texto en el tercio inferior
+            let startY = h - (bandH / 2) - (totalTextH / 2) + fontSize;
+
+            ctx.fillStyle = '#ffd93d';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'alphabetic';
+            ctx.shadowColor = 'rgba(0,0,0,0.95)';
+            ctx.shadowBlur = 14;
+            ctx.font = `bold ${fontSize}px sans-serif`;
+
+            for (const line of lines) {
+                ctx.fillText(line, w / 2, startY);
+                startY += lineH;
+            }
+            ctx.shadowBlur = 0;
+        }
+
+        async function renderTitleFrame(ctx, w, h, text) {
+            ctx.fillStyle = '#fef9e7';
+            ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = '#ff6b6b';
+            ctx.font = `bold ${Math.floor(w / 14)}px 'Quicksand', sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            wrapCanvasText(ctx, text, w / 2, h / 2, w - 80, Math.floor(w / 12));
+        }
+
+        async function renderPageFrame(ctx, w, h, page, pageNum, total) {
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, w, h);
+
+            const imgAreaH = h * 0.62;
+            const textAreaY = imgAreaH + 12;
+            const textAreaH = h - textAreaY - 10;
+
+            if (page.imageUrl && page.imageUrl.startsWith('data:image')) {
+                await new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const imgRatio = img.naturalWidth / img.naturalHeight;
+                        let drawW = w, drawH = w / imgRatio;
+                        if (drawH > imgAreaH) { drawH = imgAreaH; drawW = imgAreaH * imgRatio; }
+                        const offsetX = (w - drawW) / 2;
+                        ctx.drawImage(img, offsetX, 0, drawW, drawH);
+                        resolve();
+                    };
+                    img.onerror = resolve;
+                    img.src = page.imageUrl;
+                });
+            } else {
+                ctx.fillStyle = '#fdf2f2';
+                ctx.fillRect(0, 0, w, imgAreaH);
+                ctx.fillStyle = '#ccc';
+                ctx.font = `${Math.floor(w / 22)}px sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Ilustración no disponible', w / 2, imgAreaH / 2);
+            }
+
+            ctx.fillStyle = 'rgba(255,255,255,0.92)';
+            ctx.fillRect(0, textAreaY - 6, w, textAreaH + 12);
+
+            ctx.fillStyle = '#374151';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            const fontSize = Math.floor(w / 24);
+            ctx.font = `600 ${fontSize}px 'Quicksand', sans-serif`;
+            wrapCanvasText(ctx, page.text || '', w / 2, textAreaY, w - 48, fontSize * 1.5);
+
+            ctx.fillStyle = '#ff6b6b';
+            ctx.font = `bold ${Math.floor(w / 30)}px 'Quicksand', sans-serif`;
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(`${pageNum} / ${total}`, w - 18, h - 10);
+        }
+
+        function wrapCanvasText(ctx, text, x, startY, maxW, lineH) {
+            const words = text.split(' ');
+            let line = '';
+            let y = startY;
+            for (const word of words) {
+                const test = line ? line + ' ' + word : word;
+                if (ctx.measureText(test).width > maxW && line) {
+                    ctx.fillText(line, x, y);
+                    line = word;
+                    y += lineH;
+                } else {
+                    line = test;
+                }
+            }
+            if (line) ctx.fillText(line, x, y);
+        }
+
         function updateDot(idx, state) {
             const dot = document.getElementById(`dot-${idx}`);
             if (dot) dot.className = `status-dot ${state === 'ready' ? 'dot-ready' : 'dot-loading'}`;
